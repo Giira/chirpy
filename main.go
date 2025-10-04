@@ -1,12 +1,26 @@
 package main
 
-import "net/http"
+import (
+	"fmt"
+	"log"
+	"net/http"
+)
 
 func main() {
-	serveMux := http.NewServeMux()
-	server := http.Server{}
-	server.Handler = serveMux
-	server.Addr = ".8080"
 
-	server.ListenAndServe()
+	port := "8080"
+	root := "."
+
+	serveMux := http.NewServeMux()
+	handler := http.FileServer(http.Dir(root))
+	serveMux.Handle("/", handler)
+
+	server := http.Server{
+		Addr:    ":" + port,
+		Handler: serveMux,
+	}
+
+	fmt.Printf("Server active on port %v", port)
+	log.Fatal(server.ListenAndServe())
+
 }
