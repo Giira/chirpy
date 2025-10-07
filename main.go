@@ -12,10 +12,12 @@ func main() {
 	root := "."
 
 	serveMux := http.NewServeMux()
-	handler := http.FileServer(http.Dir(root))
-	serveMux.Handle("/", handler)
+	file_handler := http.FileServer(http.Dir(root))
+	serveMux.Handle("/app/", http.StripPrefix("/app", file_handler))
 
-	server := http.Server{
+	serveMux.HandleFunc("/healthz", handleReady)
+
+	server := &http.Server{
 		Addr:    ":" + port,
 		Handler: serveMux,
 	}
