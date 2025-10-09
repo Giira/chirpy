@@ -4,7 +4,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync/atomic"
 )
+
+type apiConfig struct {
+	fileServerHits atomic.Int32
+}
+
+func (cfg *apiConfig) metricInc(next http.Handler) http.Handler {
+	cfg.fileServerHits.Add(1)
+}
 
 func main() {
 
