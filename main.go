@@ -12,19 +12,25 @@ type apiConfig struct {
 }
 
 func (cfg *apiConfig) metricInc(next http.Handler) http.Handler {
-	cfg.fileServerHits.Add(1)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		cfg.fileServerHits.Add(1)
+		next.ServeHTTP(w, r)
+	})
 }
 
 func main() {
 
 	port := "8080"
 	root := "."
+	cfg := &apiConfig{}
 
 	serveMux := http.NewServeMux()
-	file_handler := http.FileServer(http.Dir(root))
-	serveMux.Handle("/app/", http.StripPrefix("/app", file_handler))
+	file_handler := http.StripPrefix("/app", http.FileServer(http.Dir(root)))
 
+	serveMux.Handle("/app", cfg.metricInc(file_handler))
 	serveMux.HandleFunc("/healthz", handleReady)
+	serveMux.HandleFunc("/metrics", cfg.handleHits)
+	serveMux.HandleFunc("/reset", cfg.handleReset)
 
 	server := &http.Server{
 		Addr:    ":" + port,
