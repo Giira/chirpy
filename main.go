@@ -27,10 +27,10 @@ func main() {
 	serveMux := http.NewServeMux()
 	file_handler := http.StripPrefix("/app", http.FileServer(http.Dir(root)))
 
-	serveMux.Handle("/app", cfg.metricInc(file_handler))
-	serveMux.HandleFunc("/healthz", handleReady)
-	serveMux.HandleFunc("/metrics", cfg.handleHits)
-	serveMux.HandleFunc("/reset", cfg.handleReset)
+	serveMux.Handle("/app/", cfg.metricInc(file_handler))
+	serveMux.HandleFunc("GET /api/healthz", handleReady)
+	serveMux.HandleFunc("GET /admin/metrics", cfg.handleHits)
+	serveMux.HandleFunc("POST /admin/reset", cfg.handleReset)
 
 	server := &http.Server{
 		Addr:    ":" + port,

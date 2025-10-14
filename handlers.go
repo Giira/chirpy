@@ -12,9 +12,9 @@ func handleReady(writer http.ResponseWriter, req *http.Request) {
 }
 
 func (cfg *apiConfig) handleHits(writer http.ResponseWriter, req *http.Request) {
-	req.Header.Set("Content-Type", "text/plain; charset=utf-8")
+	req.Header.Set("Content-Type", "text/html; charset=utf-8")
 	writer.WriteHeader(200)
-	text := fmt.Sprintf("Hits: %v", cfg.fileServerHits.Load())
+	text := fmt.Sprintf("<html><body><h1>Welcome, Chirpy Admin</h1><p>Chirpy has been visited %d times!</p></body></html>", cfg.fileServerHits.Load())
 	writer.Write([]byte(text))
 }
 
