@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 )
 
 func handleReady(writer http.ResponseWriter, req *http.Request) {
@@ -27,4 +30,31 @@ func (cfg *apiConfig) handleReset(writer http.ResponseWriter, req *http.Request)
 	text := fmt.Sprintf("Hits: %v\nHits reset\nHits: %v", before, after)
 	writer.Write([]byte(text))
 
+}
+
+func handleValidity(writer http.ResponseWriter, req *http.Request) {
+	type parameters struct {
+		Body string `json:"body"`
+	}
+
+	decoder := json.NewDecoder(req.Body)
+	params := parameters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		log.Printf("Error decoding parameters: %s", err)
+		writer.WriteHeader(500)
+		return
+	}
+
+	type returnVals struct {
+		CreatedAt time.Time `json:"created_at"`
+		Body      int       `json:"body"`
+		Error     string    `json:"error"`
+	}
+
+	if len(params.Body) > 140 {
+		data := returnVals{
+			Error: "Chirp is too long",
+		}
+	}
 }
