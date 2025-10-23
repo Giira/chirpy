@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 )
 
 func handleReady(writer http.ResponseWriter, req *http.Request) {
@@ -47,14 +46,32 @@ func handleValidity(writer http.ResponseWriter, req *http.Request) {
 	}
 
 	type returnVals struct {
-		CreatedAt time.Time `json:"created_at"`
-		Body      int       `json:"body"`
-		Error     string    `json:"error"`
+		Body  string `json:"body"`
+		Error string `json:"error"`
+		Valid bool   `json:"valid"`
 	}
 
+	data := &returnVals{}
+
 	if len(params.Body) > 140 {
-		data := returnVals{
+		*data = returnVals{
 			Error: "Chirp is too long",
+			Valid: false,
+		}
+		writer.WriteHeader(400)
+	} else {
+		*data = returnVals{
+			Body:  params.Body,
+			Valid: true,
 		}
 	}
+	dat, err := json.Marshal(data)
+	if err != nil {
+		log.Printf("Error marshalling JSON: %s", err)
+		writer.WriteHeader(500)
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(200)
+	writer.Write(dat)
 }
