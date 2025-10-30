@@ -11,13 +11,6 @@ type apiConfig struct {
 	fileServerHits atomic.Int32
 }
 
-func (cfg *apiConfig) metricInc(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cfg.fileServerHits.Add(1)
-		next.ServeHTTP(w, r)
-	})
-}
-
 func main() {
 
 	port := "8080"
@@ -28,8 +21,10 @@ func main() {
 	file_handler := http.StripPrefix("/app", http.FileServer(http.Dir(root)))
 
 	serveMux.Handle("/app/", cfg.metricInc(file_handler))
+
 	serveMux.HandleFunc("GET /api/healthz", handleReady)
 	serveMux.HandleFunc("GET /admin/metrics", cfg.handleHits)
+
 	serveMux.HandleFunc("POST /admin/reset", cfg.handleReset)
 	serveMux.HandleFunc("POST /api/validate_chirp", handleValidity)
 

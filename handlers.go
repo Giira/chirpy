@@ -46,7 +46,6 @@ func handleValidity(writer http.ResponseWriter, req *http.Request) {
 	}
 
 	type returnVals struct {
-		Body  string `json:"body"`
 		Error string `json:"error"`
 		Valid bool   `json:"valid"`
 	}
@@ -61,7 +60,6 @@ func handleValidity(writer http.ResponseWriter, req *http.Request) {
 		writer.WriteHeader(400)
 	} else {
 		*data = returnVals{
-			Body:  params.Body,
 			Valid: true,
 		}
 	}
