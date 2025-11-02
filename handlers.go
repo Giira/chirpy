@@ -53,23 +53,12 @@ func handleValidity(writer http.ResponseWriter, req *http.Request) {
 	data := &returnVals{}
 
 	if len(params.Body) > 140 {
-		*data = returnVals{
-			Error: "Chirp is too long",
-			Valid: false,
-		}
-		writer.WriteHeader(400)
+		msg := "Chirp is too long"
+		returnError(writer, 400, msg)
 	} else {
 		*data = returnVals{
 			Valid: true,
 		}
+		returnJSON(writer, 200, data)
 	}
-	dat, err := json.Marshal(data)
-	if err != nil {
-		log.Printf("Error marshalling JSON: %s", err)
-		writer.WriteHeader(500)
-	}
-
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(200)
-	writer.Write(dat)
 }
