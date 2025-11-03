@@ -45,19 +45,18 @@ func handleValidity(writer http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	type returnVals struct {
-		Error string `json:"error"`
-		Valid bool   `json:"valid"`
-	}
+	params.Body = checkProfanity(params.Body)
 
-	data := &returnVals{}
+	type returnVals struct {
+		CleanedBody string `json:"cleaned_body"`
+	}
 
 	if len(params.Body) > 140 {
 		msg := "Chirp is too long"
 		returnError(writer, 400, msg)
 	} else {
-		*data = returnVals{
-			Valid: true,
+		data := returnVals{
+			CleanedBody: params.Body,
 		}
 		returnJSON(writer, 200, data)
 	}

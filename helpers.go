@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func (cfg *apiConfig) metricInc(next http.Handler) http.Handler {
@@ -35,4 +36,17 @@ func returnError(w http.ResponseWriter, code int, msg string) {
 	returnJSON(w, code, errorReturn{
 		Error: msg,
 	})
+}
+
+func checkProfanity(body string) string {
+	newBody := strings.Split(strings.ToLower(body), " ")
+	var outBody []string
+	for _, word := range newBody {
+		if word == "kerfuffle" || word == "sharbert" || word == "fornax" {
+			outBody = append(outBody, "****")
+		} else {
+			outBody = append(outBody, word)
+		}
+	}
+	return strings.Join(outBody, " ")
 }
