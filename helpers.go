@@ -39,10 +39,11 @@ func returnError(w http.ResponseWriter, code int, msg string) {
 }
 
 func checkProfanity(body string) string {
-	newBody := strings.Split(strings.ToLower(body), " ")
+	newBody := strings.Split(body, " ")
 	var outBody []string
 	for _, word := range newBody {
-		if word == "kerfuffle" || word == "sharbert" || word == "fornax" {
+		lWord := strings.ToLower(word)
+		if lWord == "kerfuffle" || lWord == "sharbert" || lWord == "fornax" {
 			outBody = append(outBody, "****")
 		} else {
 			outBody = append(outBody, word)
