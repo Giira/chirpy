@@ -43,6 +43,7 @@ func main() {
 
 	serveMux.HandleFunc("POST /admin/reset", cfg.handleReset)
 	serveMux.HandleFunc("POST /api/validate_chirp", handleValidity)
+	serveMux.HandleFunc("POST /api/users", handleCreateUser)
 
 	server := &http.Server{
 		Addr:    ":" + port,

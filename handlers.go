@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 func handleReady(writer http.ResponseWriter, req *http.Request) {
@@ -60,4 +63,28 @@ func handleValidity(writer http.ResponseWriter, req *http.Request) {
 		}
 		returnJSON(writer, 200, data)
 	}
+}
+
+func handleCreateUser(writer http.ResponseWriter, req *http.Request) {
+	type parameters struct {
+		Body string `json:"body"`
+	}
+
+	type user struct {
+		ID        uuid.UUID `json:"id"`
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
+		Email     string    `json:"email"`
+	}
+
+	decoder := json.NewDecoder(req.Body)
+	params := parameters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		log.Printf("Error decoding parameters: %s", err)
+		writer.WriteHeader(500)
+		return
+	}
+
+	new_user := database.CreateUser()
 }
