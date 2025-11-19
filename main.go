@@ -16,6 +16,7 @@ import (
 type apiConfig struct {
 	fileServerHits atomic.Int32
 	queries        *database.Queries
+	platform       string
 }
 
 func main() {
@@ -30,7 +31,8 @@ func main() {
 	port := "8080"
 	root := "."
 	cfg := &apiConfig{
-		queries: dbQueries,
+		queries:  dbQueries,
+		platform: os.Getenv("PLATFORM"),
 	}
 
 	serveMux := http.NewServeMux()

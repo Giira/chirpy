@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -24,6 +25,11 @@ func (cfg *apiConfig) handleHits(writer http.ResponseWriter, req *http.Request) 
 }
 
 func (cfg *apiConfig) handleReset(writer http.ResponseWriter, req *http.Request) {
+	if cfg.platform != "dev" {
+		writer.WriteHeader(403)
+		return
+	}
+	cfg.queries.Reset(context.Background())
 	req.Header.Set("Content-Type", "text/plain; charset=utf-8")
 	writer.WriteHeader(200)
 	before := cfg.fileServerHits.Load()
