@@ -71,7 +71,7 @@ func handleValidity(writer http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func handleCreateUser(writer http.ResponseWriter, req *http.Request) {
+func (cfg *apiConfig) handleCreateUser(writer http.ResponseWriter, req *http.Request) {
 	type parameters struct {
 		Body string `json:"body"`
 	}
@@ -92,5 +92,11 @@ func handleCreateUser(writer http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	new_user := database.CreateUser()
+	new_user, err := cfg.queries.CreateUser(context.Background(), params.Body)
+	if err != nil {
+		log.Printf("error creating user: %v", err)
+		writer.WriteHeader(500)
+		return
+	}
+	returnJSON(writer, 201, new_user)
 }
