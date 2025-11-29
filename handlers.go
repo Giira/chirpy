@@ -49,8 +49,8 @@ func handleValidity(writer http.ResponseWriter, req *http.Request) {
 	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
-		log.Printf("Error decoding parameters: %s", err)
-		writer.WriteHeader(500)
+		msg := fmt.Sprintf("Error decoding parameters: %v", err)
+		returnError(writer, 500, msg)
 		return
 	}
 
@@ -73,7 +73,7 @@ func handleValidity(writer http.ResponseWriter, req *http.Request) {
 
 func (cfg *apiConfig) handleCreateUser(writer http.ResponseWriter, req *http.Request) {
 	type parameters struct {
-		Body string `json:"body"`
+		Email string `json:"email"`
 	}
 
 	type user struct {
@@ -92,11 +92,18 @@ func (cfg *apiConfig) handleCreateUser(writer http.ResponseWriter, req *http.Req
 		return
 	}
 
-	new_user, err := cfg.queries.CreateUser(context.Background(), params.Body)
+	new_user, err := cfg.queries.CreateUser(context.Background(), params.Email)
 	if err != nil {
 		log.Printf("error creating user: %v", err)
 		writer.WriteHeader(500)
 		return
 	}
-	returnJSON(writer, 201, new_user)
+	n_user := user{
+		ID:        new_user.ID,
+		CreatedAt: new_user.CreatedAt,
+		UpdatedAt: new_user.UpdatedAt,
+		Email:     new_user.Email,
+	}
+
+	returnJSON(writer, 201, n_user)
 }

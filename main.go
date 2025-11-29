@@ -44,8 +44,8 @@ func main() {
 	serveMux.HandleFunc("GET /admin/metrics", cfg.handleHits)
 
 	serveMux.HandleFunc("POST /admin/reset", cfg.handleReset)
-	serveMux.HandleFunc("POST /api/validate_chirp", handleValidity)
 	serveMux.HandleFunc("POST /api/users", cfg.handleCreateUser)
+	serveMux.HandleFunc("POST /api/chirps", handleValidity)
 
 	server := &http.Server{
 		Addr:    ":" + port,
